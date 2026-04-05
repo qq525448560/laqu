@@ -1,0 +1,25 @@
+name: 每小时拉取内容并生成txt
+
+on:
+  schedule:
+    - cron: '10 * * * *'  # 每小时的第10分钟自动执行
+  workflow_dispatch:      # 允许手动点一下运行（方便测试）
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 拉取仓库代码
+        uses: actions/checkout@v4
+
+      - name: 下载内容并生成 hebing.txt（强制覆盖）
+        run: |
+          curl -L "https://github.xmm1993.top/qq525448560/wbccq/refs/heads/main/hebing.csv?token=aniu" -o hebing.txt
+
+      - name: 提交并推送文件到仓库
+        uses: EndBug/add-and-commit@v9
+        with:
+          message: "自动更新 hebing.txt"
+          add: "hebing.txt"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
